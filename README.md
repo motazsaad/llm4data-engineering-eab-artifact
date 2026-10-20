@@ -43,7 +43,9 @@ python3 paper_tables.py --matrix-dir out --out out/paper
 ```
 
 See [`harness/README_OLLAMA.md`](harness/README_OLLAMA.md) for the full
-protocol, repair experiment, and operational notes.
+protocol, repair experiment, and operational notes. The complete pinned
+configuration, fixture checksums, model identifiers, and reproduction order are
+in [`REPRODUCIBILITY.md`](REPRODUCIBILITY.md).
 
 ## Data and results
 
