@@ -1,0 +1,14 @@
+{
+  "spacex": {
+    "fixture_dir": "spacex",
+    "source": "spacex/latest.json",
+    "source_a": "spacex/launches.json",
+    "source_b": "spacex/rockets.json"
+  },
+  "github": {
+    "fixture_dir": "github",
+    "source": "github/repo.json",
+    "source_a": "github/contributors_pandas.json",
+    "source_b": "github/contributors_scipy.json"
+  }
+}

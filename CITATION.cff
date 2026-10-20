@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this artifact, please cite it."
+title: "LLM4Data EAB Artifact"
+type: software
+authors:
+  - family-names: Saad
+    given-names: Motaz
+repository-code: "https://github.com/motazsaad/llm4data-eab-artifact"
+abstract: "Execution-based benchmark harness, recorded fixtures, and controls for LLM-generated data-engineering pipelines."

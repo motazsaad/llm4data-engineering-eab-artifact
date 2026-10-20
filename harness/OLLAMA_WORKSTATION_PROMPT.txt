@@ -1,0 +1,38 @@
+You are running Ollama experiments on a GPU workstation. 
+
+Goal: run the full experiment suite using local Ollama with models gemma4:12b, qwen3.8:27b, cogito:32b.
+
+Steps to execute:
+
+1. Verify Ollama is running
+   - Check: curl -s http://localhost:11434/api/tags should return models
+   - If not running: start ollama serve or systemd
+
+2. Ensure required models are available
+   - Pull if missing:
+     ollama pull gemma4:12b
+     ollama pull qwen3.8:27b
+     ollama pull cogito:32b
+   - Verify with: curl -s http://localhost:11434/v1/models
+
+3. Run experiments
+   - cd correspondence/2026-09_icde-submission/local_ollama
+   - bash local_ollama_run_matrix.sh --runs 3 --hermetic
+   - This runs all tasks (T1,T2,T3), both datasets (spacex, github), both platforms (Airflow, n8n), k=3, for the 3 models
+   - Expect: out/matrix_*.csv files, out/cells/
+
+4. Generate results/tables
+   - python3 ../openrouter_multirun/harness/paper_tables.py --matrix-dir out --out out/paper
+   - python3 ../openrouter_multirun/harness/aggregate.py --matrix-dir out --out out/summary
+   - Review out/summary/summary.md and out/paper/*.csv/tex as appropriate
+
+5. Report back
+   - Total cells completed, PASS/FAIL/INFRASTRUCTURE counts
+   - Any errors or stalled runs
+   - Paths to generated tables
+
+Constraints:
+- No API keys needed (local Ollama)
+- Hermetic mode on
+- 3 runs per cell (k=3)
+- Models fixed to: gemma4:12b, qwen3.8:27b, cogito:32b

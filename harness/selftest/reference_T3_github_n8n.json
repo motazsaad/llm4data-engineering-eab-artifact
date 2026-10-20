@@ -1,0 +1,129 @@
+{
+  "name": "Reference T3 Join",
+  "active": false,
+  "settings": {},
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "ref-trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://recorder:8055/fixtures/github/contributors_pandas.json",
+        "method": "GET",
+        "authentication": "none",
+        "options": {}
+      },
+      "id": "ref-fetch-a",
+      "name": "Fetch Contributors A",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://recorder:8055/fixtures/github/contributors_scipy.json",
+        "method": "GET",
+        "authentication": "none",
+        "options": {}
+      },
+      "id": "ref-fetch-b",
+      "name": "Fetch Contributors B",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        0,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const a = $('Fetch Contributors A').all().map(i => i.json);\nconst b = $('Fetch Contributors B').all().map(i => i.json);\n\nconst byLogin = {};\nfor (const row of b) {\n  byLogin[row.login] = row;\n}\n\nconst out = [];\nfor (const row of a) {\n  const other = byLogin[row.login];\n  if (!other) { continue; }\n  out.push({\n    json: {\n      login: row.login,\n      id: row.id,\n      contributions: row.contributions,\n      contributions_other: other.contributions,\n      html_url: row.html_url,\n    },\n  });\n}\n\nreturn out;"
+      },
+      "id": "ref-join",
+      "name": "Join On Login",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://recorder:8055/sink",
+        "authentication": "none",
+        "sendBody": true,
+        "specifyBody": "json",
+        "options": {},
+        "jsonBody": "={{ JSON.stringify($json) }}"
+      },
+      "id": "ref-post",
+      "name": "Deliver To Sink",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        440,
+        80
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Contributors A",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Contributors A": {
+      "main": [
+        [
+          {
+            "node": "Fetch Contributors B",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Contributors B": {
+      "main": [
+        [
+          {
+            "node": "Join On Login",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Join On Login": {
+      "main": [
+        [
+          {
+            "node": "Deliver To Sink",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {}
+}

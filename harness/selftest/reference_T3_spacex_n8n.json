@@ -1,0 +1,82 @@
+{
+  "name": "Reference T3 Join SpaceX",
+  "active": false,
+  "settings": {},
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "ref-trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [-200, 0]
+    },
+    {
+      "parameters": {
+        "url": "http://recorder:8055/fixtures/spacex/launches.json",
+        "method": "GET",
+        "authentication": "none",
+        "options": {}
+      },
+      "id": "ref-fetch-a",
+      "name": "Fetch Launches",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "url": "http://recorder:8055/fixtures/spacex/rockets.json",
+        "method": "GET",
+        "authentication": "none",
+        "options": {}
+      },
+      "id": "ref-fetch-b",
+      "name": "Fetch Rockets",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [0, 160]
+    },
+    {
+      "parameters": {
+        "jsCode": "const launches = $('Fetch Launches').all().map(i => i.json);\nconst rockets = $('Fetch Rockets').all().map(i => i.json);\n\nconst byId = {};\nfor (const r of rockets) {\n  byId[r.rocket_id] = r;\n}\n\nconst out = [];\nfor (const l of launches) {\n  const ref = l.rocket || {};\n  const rocket = byId[ref.rocket_id];\n  if (!rocket) { continue; }\n  out.push({\n    json: {\n      flight_number: l.flight_number,\n      mission_name: l.mission_name,\n      rocket_id: rocket.rocket_id,\n      rocket_name: rocket.rocket_name,\n      rocket_type: rocket.rocket_type,\n      launch_success: l.launch_success,\n    },\n  });\n}\n\nreturn out;"
+      },
+      "id": "ref-join",
+      "name": "Join On Rocket Id",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [220, 80]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://recorder:8055/sink",
+        "authentication": "none",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "ref-post",
+      "name": "Deliver To Sink",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [440, 80]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [[{ "node": "Fetch Launches", "type": "main", "index": 0 }]]
+    },
+    "Fetch Launches": {
+      "main": [[{ "node": "Fetch Rockets", "type": "main", "index": 0 }]]
+    },
+    "Fetch Rockets": {
+      "main": [[{ "node": "Join On Rocket Id", "type": "main", "index": 0 }]]
+    },
+    "Join On Rocket Id": {
+      "main": [[{ "node": "Deliver To Sink", "type": "main", "index": 0 }]]
+    }
+  },
+  "pinData": {}
+}

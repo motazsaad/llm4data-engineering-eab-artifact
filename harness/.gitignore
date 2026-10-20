@@ -1,0 +1,6 @@
+out/
+out_scaling*/
+artifacts/
+tools_*/__pycache__/
+*.pyc
+score.json

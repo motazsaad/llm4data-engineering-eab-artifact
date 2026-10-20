@@ -1,0 +1,19 @@
+services:
+  recorder:
+    build:
+      context: .
+      dockerfile: recorder/Dockerfile
+    ports:
+      - "8055:8055"
+    volumes:
+      - ./fixtures:/fixtures:ro
+      - ./out:/out
+    user: "1000:1000"
+    command: sh -c 'mkdir -p /out/cells && python3 /app/recorder_sink.py --port 8055 --fixtures-dir /fixtures
+            --log /out/cells/sink.jsonl --trace /out/cells/trace.jsonl'
+    networks:
+      - harness
+
+networks:
+  harness:
+    driver: bridge

@@ -1,0 +1,50 @@
+{
+  "name": "SpaceX Ingestion Pipeline (reference control)",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "http://recorder:8055/fixtures/spacex/latest.json",
+        "method": "GET",
+        "authentication": "none",
+        "options": {}
+      },
+      "id": "s1",
+      "name": "Fetch Latest Launch",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [200, 0]
+    },
+    {
+      "parameters": {
+        "url": "http://recorder:8055/sink",
+        "method": "POST",
+        "authentication": "none",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ data: [{ flight_number: $json.flight_number, mission_name: $json.mission_name, launch_year: $json.launch_year, launch_date_utc: $json.launch_date_utc, launch_success: $json.launch_success, rocket: $json.rocket }] }) }}",
+        "options": {}
+      },
+      "id": "s2",
+      "name": "Deliver To Sink",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [400, 0]
+    }
+  ],
+  "connections": {
+    "Fetch Latest Launch": {
+      "main": [
+        [
+          {
+            "node": "Deliver To Sink",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "active": false,
+  "pinData": {}
+}

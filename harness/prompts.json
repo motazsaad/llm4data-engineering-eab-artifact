@@ -1,0 +1,190 @@
+{
+  "datasets": {
+    "spacex": {
+      "name": "SpaceX API",
+      "source": "https://api.spacexdata.com/v3/launches/latest",
+      "sink": "https://httpbin.org/post",
+      "source_a": "https://api.spacexdata.com/v3/launches",
+      "source_b": "https://api.spacexdata.com/v3/rockets",
+      "notes": "Primary study dataset (March-June 2025). Second dataset config: see `github`.",
+      "require_keys": {
+        "T1": [
+          "flight_number",
+          "mission_name"
+        ],
+        "T2": [
+          "flight_number"
+        ],
+        "T3": [
+          "flight_number",
+          "rocket_name"
+        ]
+      },
+      "expect_rows": {
+        "T1": 1,
+        "T2": 3,
+        "T3": 3
+      }
+    },
+    "github": {
+      "name": "GitHub REST API",
+      "source": "https://api.github.com/repos/pandas-dev/pandas",
+      "sink": "https://httpbin.org/post",
+      "source_a": "https://api.github.com/repos/pandas-dev/pandas/contributors?per_page=100",
+      "source_b": "https://api.github.com/repos/scipy/scipy/contributors?per_page=100",
+      "notes": "Second study dataset. Deliberately unlike SpaceX: a large, deeply nested resource (86 top-level keys, nested owner/license/permissions objects) for ingest and transform, and two contributor lists from co-developed NumPy-ecosystem repos that share the `login` join key with 3 overlapping members, so a correct inner join yields 3 rows.",
+      "require_keys": {
+        "T1": [
+          "full_name",
+          "owner.login"
+        ],
+        "T2": [
+          "full_name"
+        ],
+        "T3": [
+          "login",
+          "contributions"
+        ]
+      },
+      "expect_rows": {
+        "T1": 1,
+        "T2": 1,
+        "T3": 3
+      }
+    }
+  },
+  "tasks": {
+    "T1": {
+      "name": "Ingestion pipeline",
+      "platforms": [
+        "Airflow",
+        "n8n"
+      ],
+      "base_prompt": "Create a data pipeline that retrieves data from a public REST API ({source}) and delivers it to a second REST endpoint ({sink}). The steps must run in order, the pipeline must retry on failure with a timeout, and the data must be handled without exposing credentials.",
+      "lead_ins": {
+        "Airflow": "Generate an Airflow DAG that:",
+        "n8n": "Generate an n8n workflow (JSON) that:"
+      }
+    },
+    "T2": {
+      "name": "ETL pipeline",
+      "platforms": [
+        "Airflow",
+        "n8n"
+      ],
+      "base_prompt": "Build an ETL pipeline that extracts records from a public REST API ({source}), applies a transformation to the records (select fields, compute derived values), and posts the transformed result to ({sink}). Include debug print statements and report the total execution time.",
+      "lead_ins": {
+        "Airflow": "Generate an Airflow DAG that:",
+        "n8n": "Generate an n8n workflow (JSON) that:"
+      }
+    },
+    "T3": {
+      "name": "Relational combine (join/merge)",
+      "platforms": [
+        "Airflow",
+        "n8n"
+      ],
+      "base_prompt": "Build a pipeline that retrieves data from two REST APIs ({source_a}) and ({source_b}) that share a common key, combines records from both on that key, and posts the result to ({sink}). Provide status updates, report any errors, confirm the final delivery, and measure/report execution times.",
+      "lead_ins": {
+        "Airflow": "Generate an Airflow DAG that:",
+        "n8n": "Generate an n8n workflow (JSON) that:"
+      }
+    }
+  },
+  "models": {
+    "gemma4:12b": {
+      "paper_id": "gemma4-12b",
+      "provider": "ollama",
+      "ollama": [
+        "gemma4:12b"
+      ]
+    },
+    "qwen3.8:27b": {
+      "paper_id": "qwen3.8-27b",
+      "provider": "ollama",
+      "ollama": [
+        "qwen3.8:27b"
+      ]
+    },
+    "cogito:32b": {
+      "paper_id": "cogito-32b",
+      "provider": "ollama",
+      "ollama": [
+        "cogito:32b"
+      ]
+    },
+    "qwen3-coder:30b": {
+      "paper_id": "qwen3-coder-30b",
+      "provider": "ollama",
+      "ollama": [
+        "qwen3-coder:30b"
+      ]
+    },
+    "qwen3:0.6b": {
+      "paper_id": "qwen3-0.6b",
+      "provider": "ollama",
+      "ollama": [
+        "qwen3:0.6b"
+      ]
+    },
+    "qwen3:1.7b": {
+      "paper_id": "qwen3-1.7b",
+      "provider": "ollama",
+      "ollama": [
+        "qwen3:1.7b"
+      ]
+    },
+    "qwen3:4b": {
+      "paper_id": "qwen3-4b",
+      "provider": "ollama",
+      "ollama": [
+        "qwen3:4b"
+      ]
+    },
+    "qwen3:8b": {
+      "paper_id": "qwen3-8b",
+      "provider": "ollama",
+      "ollama": [
+        "qwen3:8b"
+      ]
+    },
+    "qwen3:14b": {
+      "paper_id": "qwen3-14b",
+      "provider": "ollama",
+      "ollama": [
+        "qwen3:14b"
+      ]
+    },
+    "qwen3:32b": {
+      "paper_id": "qwen3-32b",
+      "provider": "ollama",
+      "ollama": [
+        "qwen3:32b"
+      ]
+    }
+  },
+  "validation_checks": {
+    "T1": [
+      "retry",
+      "timeout",
+      "credentials"
+    ],
+    "T2": [
+      "transformation",
+      "print",
+      "execution time"
+    ],
+    "T3": [
+      "status",
+      "error",
+      "confirm",
+      "execution time"
+    ]
+  },
+  "providers": {
+    "ollama": {
+      "base_url": "http://localhost:11434/v1",
+      "models_url": "http://localhost:11434/v1/models"
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "name": "SpaceX ETL Pipeline (reference control)",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "http://recorder:8055/fixtures/spacex/launches.json",
+        "method": "GET",
+        "authentication": "none",
+        "options": {}
+      },
+      "id": "s1",
+      "name": "Fetch Launches",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Select fields, compute derived values, report execution time.\nconst start = Date.now();\nconst out = [];\n\nfor (const item of items) {\n  const l = item.json;\n  const mission = l.mission_name || 'UNKNOWN';\n  const year = l.launch_year;\n  const yearInt = parseInt(String(year).slice(0, 4), 10);\n  const rocket = l.rocket || {};\n\n  const row = {\n    flight_number: l.flight_number,\n    mission_name: mission,\n    mission_slug: mission.toLowerCase().replace(/\\s+/g, '-'),\n    launch_year: year,\n    launch_year_int: Number.isNaN(yearInt) ? null : yearInt,\n    is_success: Boolean(l.launch_success),\n    rocket_name: rocket.rocket_name\n  };\n  out.push(row);\n  console.log('[etl] transformed flight ' + row.flight_number + ' -> ' + row.mission_slug);\n}\n\nconst elapsed = (Date.now() - start) / 1000;\nconsole.log('[etl] transformed ' + out.length + ' rows in ' + elapsed + 's');\n\nreturn out.map(function (r) { return { json: r }; });"
+      },
+      "id": "s2",
+      "name": "Transform Launches",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://recorder:8055/sink",
+        "method": "POST",
+        "authentication": "none",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ data: [$json] }) }}",
+        "options": {}
+      },
+      "id": "s3",
+      "name": "Deliver To Sink",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        600,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Fetch Launches": {
+      "main": [
+        [
+          {
+            "node": "Transform Launches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Launches": {
+      "main": [
+        [
+          {
+            "node": "Deliver To Sink",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "active": false,
+  "pinData": {}
+}

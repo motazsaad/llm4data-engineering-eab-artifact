@@ -1,0 +1,50 @@
+{
+  "name": "GitHub Ingestion Pipeline (reference control)",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "http://recorder:8055/fixtures/github/repo.json",
+        "method": "GET",
+        "authentication": "none",
+        "options": {}
+      },
+      "id": "g1",
+      "name": "Fetch GitHub Repo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [200, 0]
+    },
+    {
+      "parameters": {
+        "url": "http://recorder:8055/sink",
+        "method": "POST",
+        "authentication": "none",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ data: [{ full_name: $json.full_name, name: $json.name, owner: $json.owner, stargazers_count: $json.stargazers_count, forks_count: $json.forks_count, open_issues_count: $json.open_issues_count, language: $json.language, created_at: $json.created_at }] }) }}",
+        "options": {}
+      },
+      "id": "g2",
+      "name": "Deliver To Sink",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [400, 0]
+    }
+  ],
+  "connections": {
+    "Fetch GitHub Repo": {
+      "main": [
+        [
+          {
+            "node": "Deliver To Sink",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "active": false,
+  "pinData": {}
+}

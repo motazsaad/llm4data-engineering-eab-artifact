@@ -1,0 +1,30 @@
+[
+  {
+    "rocket_id": "falcon9",
+    "rocket_name": "Falcon 9",
+    "rocket_type": "FT",
+    "active": true,
+    "stages": 2,
+    "boosters": 0,
+    "cost_per_launch": 50000000,
+    "success_rate_pct": 94.4,
+    "first_flight": "2010-06-04",
+    "country": "United States",
+    "company": "SpaceX",
+    "description": "Falcon 9 is a two-stage rocket designed and manufactured by SpaceX for the reliable and safe transport of satellites and the Dragon spacecraft into orbit."
+  },
+  {
+    "rocket_id": "falconheavy",
+    "rocket_name": "Falcon Heavy",
+    "rocket_type": "v1.1",
+    "active": true,
+    "stages": 2,
+    "boosters": 2,
+    "cost_per_launch": 90000000,
+    "success_rate_pct": 100.0,
+    "first_flight": "2018-02-06",
+    "country": "United States",
+    "company": "SpaceX",
+    "description": "Falcon Heavy is the most powerful operational rocket in the world by a factor of two."
+  }
+]

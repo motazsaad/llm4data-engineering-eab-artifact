@@ -1,0 +1,71 @@
+{
+  "name": "GitHub ETL Pipeline (reference control)",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "http://recorder:8055/fixtures/github/repo.json",
+        "method": "GET",
+        "authentication": "none",
+        "options": {}
+      },
+      "id": "e1",
+      "name": "Fetch GitHub Repo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [200, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Select fields, derive values, and report execution time.\nconst repo = items[0].json;\nconst start = Date.now();\n\nconsole.log('[etl] fetched repo: ' + repo.full_name);\n\nconst stars = repo.stargazers_count || 0;\nconst forks = repo.forks_count || 0;\nconst issues = repo.open_issues_count || 0;\n\nconst owner = repo.owner || {};\n\nconst row = {\n  full_name: repo.full_name,\n  name: repo.name,\n  owner_login: owner.login,\n  stars_per_fork: forks > 0 ? Math.round((stars / forks) * 100) / 100 : 0,\n  has_open_issues: issues > 0,\n  language: repo.language,\n  created_at: repo.created_at\n};\n\nconst elapsed = (Date.now() - start) / 1000;\nconsole.log('[etl] transformed ' + repo.full_name + ' in ' + elapsed + 's');\nconsole.log('[etl] execution time ' + elapsed + 's');\n\nreturn [{ json: row }];"
+      },
+      "id": "e2",
+      "name": "Transform Repo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [400, 0]
+    },
+    {
+      "parameters": {
+        "url": "http://recorder:8055/sink",
+        "method": "POST",
+        "authentication": "none",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ data: [$json] }) }}",
+        "options": {}
+      },
+      "id": "e3",
+      "name": "Deliver To Sink",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [600, 0]
+    }
+  ],
+  "connections": {
+    "Fetch GitHub Repo": {
+      "main": [
+        [
+          {
+            "node": "Transform Repo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Repo": {
+      "main": [
+        [
+          {
+            "node": "Deliver To Sink",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "active": false,
+  "pinData": {}
+}

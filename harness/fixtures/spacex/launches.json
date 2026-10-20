@@ -1,0 +1,56 @@
+[
+  {
+    "flight_number": 25,
+    "mission_name": "Telstar 19V",
+    "launch_year": "2018",
+    "launch_date_utc": "2018-07-22T05:50:00.000Z",
+    "launch_success": true,
+    "rocket": {
+      "rocket_id": "falcon9",
+      "rocket_name": "Falcon 9",
+      "rocket_type": "FT"
+    },
+    "launch_site": {
+      "site_id": "ccafs_slc_40",
+      "site_name": "CCAFS SLC 40",
+      "site_name_long": "Cape Canaveral Air Force Station Space Launch Complex 40"
+    },
+    "details": "SSL-manufactured satellite for Telesat."
+  },
+  {
+    "flight_number": 24,
+    "mission_name": "Iridium NEXT 11",
+    "launch_year": "2018",
+    "launch_date_utc": "2018-07-22T05:50:00.000Z",
+    "launch_success": true,
+    "rocket": {
+      "rocket_id": "falcon9",
+      "rocket_name": "Falcon 9",
+      "rocket_type": "FT"
+    },
+    "launch_site": {
+      "site_id": "vafb_slc_4e",
+      "site_name": "VAFB SLC 4E",
+      "site_name_long": "Vandenberg Air Force Base Space Launch Complex 4E"
+    },
+    "details": "Fifth Iridium NEXT mission."
+  },
+  {
+    "flight_number": 23,
+    "mission_name": "CRS-15",
+    "launch_year": "2018",
+    "launch_date_utc": "2018-06-29T09:42:00.000Z",
+    "launch_success": true,
+    "rocket": {
+      "rocket_id": "falcon9",
+      "rocket_name": "Falcon 9",
+      "rocket_type": "FT"
+    },
+    "launch_site": {
+      "site_id": "ksc_lc_39a",
+      "site_name": "KSC LC 39A",
+      "site_name_long": "Kennedy Space Center Historic Launch Complex 39A"
+    },
+    "details": "Dragon CRS-15 resupply mission."
+  }
+]

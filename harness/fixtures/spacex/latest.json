@@ -1,0 +1,29 @@
+{
+  "flight_number": 25,
+  "mission_name": "Telstar 19V",
+  "launch_year": "2018",
+  "launch_date_utc": "2018-07-22T05:50:00.000Z",
+  "launch_success": true,
+  "rocket": {
+    "rocket_id": "falcon9",
+    "rocket_name": "Falcon 9",
+    "rocket_type": "FT"
+  },
+  "ships": ["GOQuest"],
+  "telemetry": {
+    "flight_club": "https://www.flightclub.io/result?code=TS19"
+  },
+  "reuse": {
+    "core": true,
+    "side_core1": false,
+    "side_core2": false,
+    "fairings": true,
+    "capsule": false
+  },
+  "launch_site": {
+    "site_id": "ccafs_slc_40",
+    "site_name": "CCAFS SLC 40",
+    "site_name_long": "Cape Canaveral Air Force Station Space Launch Complex 40"
+  },
+  "details": "SSL-manufactured satellite for Telesat. The launch was the heaviest commercial communications satellite ever launched to geostationary transfer orbit."
+}
